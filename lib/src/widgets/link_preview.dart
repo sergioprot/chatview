@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,7 +32,7 @@ class LinkPreview extends StatelessWidget {
   const LinkPreview({
     Key? key,
     required this.textMessage,
-    required this.extractedUrl,
+    required this.extractedUrls,
     this.linkPreviewConfig,
   }) : super(key: key);
 
@@ -39,7 +40,7 @@ class LinkPreview extends StatelessWidget {
   final String textMessage;
 
   /// Provides url which is passed in message.
-  final String extractedUrl;
+  final List<String> extractedUrls;
 
   /// Provides configuration of chat bubble appearance when link/URL is passed
   /// in message.
@@ -47,7 +48,8 @@ class LinkPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isImageUrl = extractedUrl.isImageUrl;
+    final firstUrl = extractedUrls.first;
+    final isImageUrl = firstUrl.isImageUrl;
     return Padding(
       padding: linkPreviewConfig?.padding ??
           const EdgeInsets.symmetric(horizontal: 6, vertical: verticalPadding),
@@ -59,11 +61,11 @@ class LinkPreview extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: verticalPadding),
               child: AnyLinkPreview(
-                link: extractedUrl,
+                link: firstUrl,
                 removeElevation: true,
                 errorBody: linkPreviewConfig?.errorBody,
                 proxyUrl: linkPreviewConfig?.proxyUrl,
-                onTap: _onLinkTap,
+                onTap: () => _onLinkTap(firstUrl),
                 placeholderWidget: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.25,
                   width: double.infinity,
@@ -86,9 +88,9 @@ class LinkPreview extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: verticalPadding),
               child: InkWell(
-                onTap: _onLinkTap,
+                onTap: () => _onLinkTap(firstUrl),
                 child: Image.network(
-                  extractedUrl,
+                  firstUrl,
                   height: 120,
                   width: double.infinity,
                   fit: BoxFit.fitWidth,
@@ -97,32 +99,72 @@ class LinkPreview extends StatelessWidget {
             ),
           },
           const SizedBox(height: verticalPadding),
-          InkWell(
-            onTap: _onLinkTap,
-            child: Text(
-              textMessage,
-              style: linkPreviewConfig?.linkStyle ??
-                  const TextStyle(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
-                  ),
-            ),
-          ),
+          _buildTextWithClickableUrls(),
         ],
       ),
     );
   }
 
-  void _onLinkTap() {
+  Widget _buildTextWithClickableUrls() {
+    final linkStyle = linkPreviewConfig?.linkStyle ??
+        const TextStyle(
+          color: Colors.white,
+          decoration: TextDecoration.underline,
+        );
+
+    /// Build TextSpan list with clickable URLs
+    final spans = <TextSpan>[];
+
+    /// Track the last index to handle text segments
+    int lastIndex = 0;
+
+    /// Iterate through extracted URLs to create clickable spans
+    for (final url in extractedUrls) {
+      final start = textMessage.indexOf(url, lastIndex);
+      if (start == -1) continue;
+
+      /// Add all text before the URL
+      if (start > lastIndex) {
+        spans.add(
+          TextSpan(text: textMessage.substring(lastIndex, start)),
+        );
+      }
+
+      /// Add the Url as a clickable link
+      spans.add(
+        TextSpan(
+          text: url,
+          style: linkStyle,
+          recognizer: TapGestureRecognizer()..onTap = () => _onLinkTap(url),
+        ),
+      );
+
+      /// Update lastIndex to the end of the current URL
+      lastIndex = start + url.length;
+    }
+
+    /// Add any remaining text after the last URL
+    if (lastIndex < textMessage.length) {
+      spans.add(
+        TextSpan(text: textMessage.substring(lastIndex)),
+      );
+    }
+
+    return RichText(
+      text: TextSpan(children: spans),
+    );
+  }
+
+  void _onLinkTap(String url) {
     if (linkPreviewConfig?.onUrlDetect case final onUrlDetect?) {
-      onUrlDetect(extractedUrl);
+      onUrlDetect(url);
     } else {
-      _launchURL();
+      _launchURL(url);
     }
   }
 
-  void _launchURL() async {
-    final parsedUrl = Uri.parse(extractedUrl);
+  void _launchURL(String url) async {
+    final parsedUrl = Uri.parse(url);
     await canLaunchUrl(parsedUrl)
         ? await launchUrl(parsedUrl)
         : throw couldNotLaunch;

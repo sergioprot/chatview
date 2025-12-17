@@ -115,8 +115,10 @@ extension ValidateString on String {
   /// Regular expression pattern to match URLs.
   static final _urlRegex = RegExp(urlRegex, caseSensitive: false);
 
-  /// Extracts the first URL found in the string.
-  String? get extractedUrl => _urlRegex.firstMatch(this)?.group(0);
+  /// Extracts all URLs from the string and returns them as a list.
+  List<String> get extractedUrls {
+    return _urlRegex.allMatches(this).map((m) => m.group(0)!).toList();
+  }
 
   Widget getUserProfilePicture({
     required ChatUser? Function(String) getChatUser,

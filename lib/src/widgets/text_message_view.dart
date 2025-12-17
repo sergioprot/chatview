@@ -78,12 +78,12 @@ class TextMessageView extends StatelessWidget {
     final textSelectionConfig = isMessageBySender
         ? outgoingChatBubbleConfig?.textSelectionConfig
         : inComingChatBubbleConfig?.textSelectionConfig;
-    final extractedUrl = textMessage.extractedUrl;
-    final baseWidget = extractedUrl != null
+    final extractedUrls = textMessage.extractedUrls;
+    final baseWidget = extractedUrls.isNotEmpty
         ? LinkPreview(
             linkPreviewConfig: _linkPreviewConfig,
             textMessage: textMessage,
-            extractedUrl: extractedUrl,
+            extractedUrls: extractedUrls,
           )
         : Text(
             textMessage,
