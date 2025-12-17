@@ -36,6 +36,7 @@ class ChatBubble {
     this.senderNameTextStyle,
     this.receiptsWidgetConfig,
     this.onMessageRead,
+    this.inBubbleTimeTextStyle,
   });
 
   /// Used for giving color of chat bubble.
@@ -66,4 +67,8 @@ class ChatBubble {
   /// Callback when a message has been displayed for the first
   /// time only
   final ValueSetter<Message>? onMessageRead;
+
+  /// Used for giving text style of time shown inside the chat bubble.
+  /// Only applicable when [FeatureActiveConfig.enableInBubbleTime] is true.
+  final TextStyle? inBubbleTimeTextStyle;
 }

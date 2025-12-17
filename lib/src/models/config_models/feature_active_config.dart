@@ -36,6 +36,7 @@ class FeatureActiveConfig {
     this.receiptsBuilderVisibility = true,
     this.enableOtherUserName = true,
     this.enableScrollToBottomButton = false,
+    this.enableInBubbleTime = false,
   });
 
   /// Used for enable/disable swipe to reply.
@@ -79,4 +80,7 @@ class FeatureActiveConfig {
 
   /// Used for enable/disable Scroll To Bottom Button.
   final bool enableScrollToBottomButton;
+
+  /// Used for enable/disable showing message time inside the chat bubble.
+  final bool enableInBubbleTime;
 }

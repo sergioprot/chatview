@@ -27,6 +27,7 @@ import '../models/chat_bubble.dart';
 import '../models/config_models/link_preview_configuration.dart';
 import '../models/config_models/message_reaction_configuration.dart';
 import '../utils/constants/constants.dart';
+import 'chat_view_inherited_widget.dart';
 import 'link_preview.dart';
 import 'reaction_widget.dart';
 
@@ -71,6 +72,9 @@ class TextMessageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final textMessage = message.message;
+    final enableInBubbleTime =
+        ChatViewInheritedWidget.of(context)?.featureActiveConfig.enableInBubbleTime ?? false;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -95,14 +99,44 @@ class TextMessageView extends StatelessWidget {
                   linkPreviewConfig: _linkPreviewConfig,
                   url: textMessage,
                 )
-              : Text(
-                  textMessage,
-                  style: _textStyle ??
-                      textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                ),
+              : enableInBubbleTime
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            textMessage,
+                            style: _textStyle ??
+                                textTheme.bodyMedium!.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 1),
+                          child: Text(
+                            message.createdAt.getTimeFromDateTime,
+                            style: _inBubbleTimeTextStyle ??
+                                TextStyle(
+                                  color: (_textStyle?.color ?? Colors.white)
+                                      .withValues(alpha: 0.7),
+                                  fontSize: 10,
+                                ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      textMessage,
+                      style: _textStyle ??
+                          textTheme.bodyMedium!.copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                    ),
         ),
         if (message.reaction.reactions.isNotEmpty)
           ReactionWidget(
@@ -130,6 +164,10 @@ class TextMessageView extends StatelessWidget {
   TextStyle? get _textStyle => isMessageBySender
       ? outgoingChatBubbleConfig?.textStyle
       : inComingChatBubbleConfig?.textStyle;
+
+  TextStyle? get _inBubbleTimeTextStyle => isMessageBySender
+      ? outgoingChatBubbleConfig?.inBubbleTimeTextStyle
+      : inComingChatBubbleConfig?.inBubbleTimeTextStyle;
 
   BorderRadiusGeometry _borderRadius(String message) => isMessageBySender
       ? outgoingChatBubbleConfig?.borderRadius ??
