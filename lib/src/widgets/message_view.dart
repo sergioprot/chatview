@@ -169,7 +169,7 @@ class _MessageViewState extends State<MessageView>
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           (() {
-                if (message.isAllEmoji) {
+                if (message.isAllEmoji && message.characters.length < 2) {
                   return Stack(
                     clipBehavior: Clip.none,
                     children: [

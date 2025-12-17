@@ -1,4 +1,6 @@
 ## [3.0.0]
+* **Fix**: [415](https://github.com/SimformSolutionsPvtLtd/chatview/pull/415)
+  Adjust emoji display logic to handle multiple emojis display width.
 * **Feat**: [414](https://github.com/SimformSolutionsPvtLtd/chatview/pull/414)
   Enhance link preview to support multiple URLs extraction and clickable links.
 * **Feat**: [374](https://github.com/SimformSolutionsPvtLtd/chatview/issues/374)
