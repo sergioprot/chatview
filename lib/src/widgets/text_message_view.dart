@@ -27,7 +27,6 @@ import '../models/chat_bubble.dart';
 import '../models/config_models/link_preview_configuration.dart';
 import '../models/config_models/message_reaction_configuration.dart';
 import '../utils/constants/constants.dart';
-import 'chat_view_inherited_widget.dart';
 import 'link_preview.dart';
 import 'reaction_widget.dart';
 
@@ -42,6 +41,7 @@ class TextMessageView extends StatelessWidget {
     this.messageReactionConfig,
     this.highlightMessage = false,
     this.highlightColor,
+    this.enableInBubbleTime = false,
   }) : super(key: key);
 
   /// Represents current message is sent by current user.
@@ -68,12 +68,13 @@ class TextMessageView extends StatelessWidget {
   /// Allow user to set color of highlighted message.
   final Color? highlightColor;
 
+  /// Whether to show message time inside the bubble.
+  final bool enableInBubbleTime;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final textMessage = message.message;
-    final enableInBubbleTime =
-        ChatViewInheritedWidget.of(context)?.featureActiveConfig.enableInBubbleTime ?? false;
 
     return Stack(
       clipBehavior: Clip.none,

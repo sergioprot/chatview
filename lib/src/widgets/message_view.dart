@@ -51,6 +51,7 @@ class MessageView extends StatefulWidget {
     this.messageConfig,
     this.onMaxDuration,
     this.controller,
+    this.enableInBubbleTime = false,
   }) : super(key: key);
 
   /// Provides message instance of chat.
@@ -96,6 +97,9 @@ class MessageView extends StatefulWidget {
   final ChatController? controller;
 
   final ValueSetter<int>? onMaxDuration;
+
+  /// Whether to show message time inside the bubble.
+  final bool enableInBubbleTime;
 
   @override
   State<MessageView> createState() => _MessageViewState();
@@ -222,6 +226,7 @@ class _MessageViewState extends State<MessageView>
                     messageReactionConfig: messageConfig?.messageReactionConfig,
                     highlightColor: widget.highlightColor,
                     highlightMessage: widget.shouldHighlight,
+                    enableInBubbleTime: widget.enableInBubbleTime,
                   );
                 } else if (widget.message.messageType.isVoice) {
                   return VoiceMessageView(
