@@ -437,7 +437,10 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       // This is a workaround for the issue where the keyboard remain open and overlaps the text field.
 
       // https://github.com/SimformSolutionsPvtLtd/chatview/issues/266
-      if (imageSource == ImageSource.gallery && Platform.isIOS && hasFocus) {
+      if (!kIsWeb &&
+          imageSource == ImageSource.gallery &&
+          Platform.isIOS &&
+          hasFocus) {
         widget.focusNode.requestFocus();
       }
     }
